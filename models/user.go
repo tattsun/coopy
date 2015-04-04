@@ -1,3 +1,5 @@
 package models
 
-import ()
+func CreateUser() int {
+	return 1
+}

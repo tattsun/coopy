@@ -51,23 +51,38 @@ type Model struct {
 	database string
 }
 
+type Transaction struct {
+	db gorm.DB
+}
+
 func NewModel(host string, user string, password string, database string) *Model {
 	return &Model{user: user, password: password, host: host, database: database}
 }
 
 func (m *Model) Migrate() error {
-	conInfo := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local", m.user, m.password, m.host, m.database)
-
-	db, err := gorm.Open("mysql", conInfo)
-	defer db.Close()
+	t, err := m.Open()
+	defer t.Close()
 	if err != nil {
 		return err
 	}
 
-	db.AutoMigrate(&User{})
-	db.AutoMigrate(&Article{})
-	db.AutoMigrate(&Revision{})
-	db.AutoMigrate(&ArticleTag{})
-	db.AutoMigrate(&Tag{})
+	t.db.AutoMigrate(&User{})
+	t.db.AutoMigrate(&Article{})
+	t.db.AutoMigrate(&Revision{})
+	t.db.AutoMigrate(&ArticleTag{})
+	t.db.AutoMigrate(&Tag{})
 	return nil
+}
+
+func (m *Model) Open() (*Transaction, error) {
+	conInfo := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local", m.user, m.password, m.host, m.database)
+	db, err := gorm.Open("mysql", conInfo)
+	if err != nil {
+		return nil, err
+	}
+	return &Transaction{db: db}, nil
+}
+
+func (self *Transaction) Close() {
+	self.db.Close()
 }
