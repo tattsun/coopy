@@ -9,26 +9,54 @@ import (
 )
 
 type User struct {
-	UserID    int `sql:"index"`
-	Name      string
-	CreatedAt time.Time
+	UserID    string    `gorm:"primary_key"`
+	CreatedAt time.Time `sql:"DEFAULT:current_timestamp"`
 	Email     string
-}
-
-type AuthInfo struct {
-	UserID   int `sql:"index"`
-	Password string
+	Name      string
+	Password  string
+	Token     string
+	IsPending bool
 }
 
 type Article struct {
-	ID     int `sql:"index"`
-	Title  string
-	Body   string
-	UserID string `sql:"index"`
+	ID        string `gorm:"primary_key"`
+	UserID    string
+	CreatedAt time.Time `sql:"DEFAULT:current_timestamp"`
 }
 
-func Migrate(userId string, password string, dbname string) error {
-	conInfo := fmt.Sprintf("%s:%s@/%s?charset=utf8&parseTime=True&loc=Local", userId, password, dbname)
+type Revision struct {
+	ID           string `gorm:"primary_key"`
+	ArticleID    string
+	UserID       string
+	CreatedAt    time.Time `sql:"DEFAULT:current_timestamp"`
+	Title        string
+	Content      string
+	ContentBuilt string
+}
+
+type ArticleTag struct {
+	ID        string `gorm:"primary_key"`
+	ArticleID string
+	TagID     string
+}
+
+type Tag struct {
+	ID string
+}
+
+type Model struct {
+	user     string
+	password string
+	host     string
+	database string
+}
+
+func NewModel(host string, user string, password string, database string) *Model {
+	return &Model{user: user, password: password, host: host, database: database}
+}
+
+func (m *Model) Migrate() error {
+	conInfo := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local", m.user, m.password, m.host, m.database)
 
 	db, err := gorm.Open("mysql", conInfo)
 	defer db.Close()
@@ -37,7 +65,9 @@ func Migrate(userId string, password string, dbname string) error {
 	}
 
 	db.AutoMigrate(&User{})
-	db.AutoMigrate(&AuthInfo{})
 	db.AutoMigrate(&Article{})
+	db.AutoMigrate(&Revision{})
+	db.AutoMigrate(&ArticleTag{})
+	db.AutoMigrate(&Tag{})
 	return nil
 }

@@ -5,10 +5,16 @@ import (
 )
 
 type Config struct {
-	MysqlUrl string
+	MysqlHost     string
+	MysqlUser     string
+	MysqlPassword string
+	MysqlDatabase string
 }
 
 func GetConfig() *Config {
-	mysqlUrl := os.Getenv("MYSQL_URL")
-	return &Config{MysqlUrl: mysqlUrl}
+	mysqlHost := os.Getenv("COOPY_MYSQL_HOST")
+	mysqlUser := os.Getenv("COOPY_MYSQL_USER")
+	mysqlPassword := os.Getenv("COOPY_MYSQL_PASSWORD")
+	mysqlDatabase := os.Getenv("COOPY_MYSQL_DATABASE")
+	return &Config{MysqlHost: mysqlHost, MysqlUser: mysqlUser, MysqlPassword: mysqlPassword, MysqlDatabase: mysqlDatabase}
 }

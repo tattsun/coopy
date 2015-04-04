@@ -12,11 +12,11 @@ import (
 )
 
 var conf = config.GetConfig()
+var model = models.NewModel(conf.MysqlHost, conf.MysqlUser, conf.MysqlPassword, conf.MysqlDatabase)
 
 func hello(c web.C, w http.ResponseWriter, r *http.Request) {
-	models.Migrate("test", "hogehoge", "coopy")
-
-	fmt.Fprintf(w, "Hello, %s, %s day", c.URLParams["name"], conf.MysqlUrl)
+	model.Migrate()
+	fmt.Fprintf(w, "Hello, %s, %s day", c.URLParams["name"], conf.MysqlHost)
 }
 
 func main() {
