@@ -59,6 +59,24 @@ func static_assets_test_js() (*asset, error) {
 	return a, err
 }
 
+// static_login_haml reads file data from disk. It returns an error on failure.
+func static_login_haml() (*asset, error) {
+	path := "/Users/tattsun/work/src/github.com/tattsun/coopy/static/login.haml"
+	name := "static/login.haml"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // static_newuser_haml reads file data from disk. It returns an error on failure.
 func static_newuser_haml() (*asset, error) {
 	path := "/Users/tattsun/work/src/github.com/tattsun/coopy/static/newuser.haml"
@@ -149,6 +167,7 @@ func AssetNames() []string {
 var _bindata = map[string]func() (*asset, error){
 	"static/.gitkeep": static_gitkeep,
 	"static/assets/test.js": static_assets_test_js,
+	"static/login.haml": static_login_haml,
 	"static/newuser.haml": static_newuser_haml,
 	"static/test.haml": static_test_haml,
 }
@@ -199,6 +218,8 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 		"assets": &_bintree_t{nil, map[string]*_bintree_t{
 			"test.js": &_bintree_t{static_assets_test_js, map[string]*_bintree_t{
 			}},
+		}},
+		"login.haml": &_bintree_t{static_login_haml, map[string]*_bintree_t{
 		}},
 		"newuser.haml": &_bintree_t{static_newuser_haml, map[string]*_bintree_t{
 		}},

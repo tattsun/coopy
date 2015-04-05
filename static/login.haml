@@ -1,0 +1,13 @@
+%html
+  %haed
+    %title Login
+  %body
+    %form{:method => "POST", :action => "/login"}
+      %p
+        UserID:
+        %input{:type => "text", :name => "userid"}
+      %p
+        Password:
+        %input{:type => "text", :name => "password"}
+      %p
+        %input{:type => "submit", :value => "submit"}

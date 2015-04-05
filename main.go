@@ -16,16 +16,16 @@ import (
 var conf = config.GetConfig()
 var model = models.NewModel(conf.MysqlHost, conf.MysqlUser, conf.MysqlPassword, conf.MysqlDatabase)
 
+func home(c web.C, w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "OK")
+}
+
 func resetdb(c web.C, w http.ResponseWriter, r *http.Request) {
 	model.DropAll()
 	model.Migrate()
 	engine := views.NewEngine("static/test.haml")
 	engine.Add("name", "john")
 	engine.Render(w)
-}
-
-func test2(c web.C, w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "<h1>Hello, world</h1>%s", r.RequestURI)
 }
 
 func newUser(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -39,6 +39,27 @@ func staticFile(c web.C, w http.ResponseWriter, r *http.Request) {
 		fmt.Print(err)
 		http.NotFound(w, r)
 	}
+}
+
+func loginForm(w http.ResponseWriter, r *http.Request) {
+	engine := views.NewEngine("static/login.haml")
+	engine.Render(w)
+}
+
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	userid := r.FormValue("userid")
+	password := r.FormValue("password")
+	token, err := models.Authorize(userid, password)
+	if err != nil {
+		http.Redirect(w, r, "/", 303)
+		return
+	}
+	session, _ := store.Get(r, "coopy")
+	session.Values["userid"] = userid
+	session.Values["token"] = token
+	session.Save(r, w)
+	fmt.Print("OK")
+	http.Redirect(w, r, "/l/home", 303)
 }
 
 func apiNewUser(w http.ResponseWriter, r *http.Request) {
@@ -66,14 +87,18 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	initSession("test")
 	// views
+	goji.Get("/", loginForm)
+	goji.Post("/login", loginHandler)
 	goji.Get("/resetdb", resetdb)
-	goji.Get("/test", test2)
 	goji.Get("/users/new", newUser)
 	goji.Get("/static/assets/*", staticFile)
 	// views(login)
 	login := web.New()
 	goji.Handle("/l/*", login)
+	login.Use(middlewareLogin)
+	login.Get("/l/home", home)
 	// apis
 	api := web.New()
 	goji.Handle("/api/*", api)

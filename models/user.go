@@ -34,6 +34,37 @@ func CreateUser(userid string, email string, name string, password string) (*Use
 	return user, auth, nil
 }
 
+func Authorize(userid string, password string) (string, error) {
+	user, err := FindUserOne(&User{UserID: userid})
+	if err != nil {
+		return "", err
+	}
+	ok, err := user.Authorize(password)
+	if err != nil {
+		return "", err
+	}
+	if !ok {
+		return "", fmt.Errorf("Unauthorized")
+	}
+	auth, err := user.getAuthInfo()
+	if err != nil {
+		return "", nil
+	}
+	return auth.Token, nil
+}
+
+func AuthorizeToken(userid string, token string) bool {
+	user, err := FindUserOne(&User{UserID: userid})
+	if err != nil {
+		return false
+	}
+	ok, err := user.AuthorizeToken(token)
+	if err != nil {
+		return false
+	}
+	return ok
+}
+
 func IsExists(user User) bool {
 	cnt := 0
 	db.Model(&user).Where(user).Count(&cnt)
