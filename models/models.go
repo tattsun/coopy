@@ -9,39 +9,42 @@ import (
 )
 
 type User struct {
-	UserID    string    `gorm:"primary_key"`
+	Id        int
+	UserID    string    `sql:"unique_index"`
 	CreatedAt time.Time `sql:"DEFAULT:current_timestamp"`
-	Email     string
-	Name      string
-	Password  string
-	Token     string
-	IsPending bool
+	Email     string    `sql:"not null"`
+	Name      string    `sql:"not null"`
+	IsPending bool      `sql:"not null; DEFAULT:true"`
+}
+
+type UserAuthInfo struct {
+	Id             int
+	UserID         string `sql:"unique_index"`
+	HashedPassword string `sql:"not null"`
+	Salt           string `sql:"not null"`
+	Token          string `sql:"not null"`
 }
 
 type Article struct {
-	ID        string `gorm:"primary_key"`
-	UserID    string
+	Id        int
+	UserID    string    `sql:"not null"`
 	CreatedAt time.Time `sql:"DEFAULT:current_timestamp"`
+	Tags      []Tag
 }
 
 type Revision struct {
-	ID           string `gorm:"primary_key"`
-	ArticleID    string
-	UserID       string
+	Id           int
+	ArticleID    string    `sql:"not null"`
+	UserID       string    `sql:"not null"`
 	CreatedAt    time.Time `sql:"DEFAULT:current_timestamp"`
-	Title        string
-	Content      string
+	Title        string    `sql:"not null"`
+	Content      string    `sql:"not null"`
 	ContentBuilt string
 }
 
-type ArticleTag struct {
-	ID        string `gorm:"primary_key"`
-	ArticleID string
-	TagID     string
-}
-
 type Tag struct {
-	ID string
+	Id      int
+	TagName string
 }
 
 type Model struct {
@@ -51,38 +54,50 @@ type Model struct {
 	database string
 }
 
-type Transaction struct {
-	db gorm.DB
-}
+var db *gorm.DB = nil
 
 func NewModel(host string, user string, password string, database string) *Model {
 	return &Model{user: user, password: password, host: host, database: database}
 }
 
-func (m *Model) Migrate() error {
-	t, err := m.Open()
-	defer t.Close()
+func (m *Model) DropAll() {
+	db.DropTableIfExists(&User{})
+	db.DropTableIfExists(&UserAuthInfo{})
+	db.DropTableIfExists(&Article{})
+	db.DropTableIfExists(&Revision{})
+	db.DropTableIfExists(&Tag{})
+}
+
+func (m *Model) Migrate() {
+	db.AutoMigrate(&User{})
+	db.AutoMigrate(&UserAuthInfo{})
+	db.AutoMigrate(&Article{})
+	db.AutoMigrate(&Revision{})
+	db.AutoMigrate(&Tag{})
+}
+
+func (m *Model) Open() error {
+	if db != nil {
+		err := m.Close()
+		if err != nil {
+			return err
+		}
+	}
+
+	conInfo := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local", m.user, m.password, m.host, m.database)
+	dbn, err := gorm.Open("mysql", conInfo)
 	if err != nil {
 		return err
 	}
-
-	t.db.AutoMigrate(&User{})
-	t.db.AutoMigrate(&Article{})
-	t.db.AutoMigrate(&Revision{})
-	t.db.AutoMigrate(&ArticleTag{})
-	t.db.AutoMigrate(&Tag{})
+	db = &dbn
+	db.LogMode(true)
 	return nil
 }
 
-func (m *Model) Open() (*Transaction, error) {
-	conInfo := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local", m.user, m.password, m.host, m.database)
-	db, err := gorm.Open("mysql", conInfo)
+func (m *Model) Close() error {
+	err := db.Close()
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return &Transaction{db: db}, nil
-}
-
-func (self *Transaction) Close() {
-	self.db.Close()
+	return nil
 }

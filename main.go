@@ -19,7 +19,13 @@ func hello(c web.C, w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello, %s, %s day", c.URLParams["name"], conf.MysqlHost)
 }
 
+func test(c web.C, w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "%d", 1)
+}
+
 func main() {
+	model.Open()
 	goji.Get("/hello/:name", hello)
+	goji.Get("/", test)
 	goji.Serve()
 }

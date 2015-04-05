@@ -1,17 +1,67 @@
 package models
 
 import (
-	"github.com/tattsun/coopy/config"
 	"testing"
 )
 
-var conf = config.GetConfig()
-var model = NewModel(conf.MysqlHost, conf.MysqlUser, conf.MysqlPassword, conf.MysqlDatabase)
-var transaction, _ = model.Open()
+func TestHashPassword(t *testing.T) {
+	actual := hashPassword("test", "foobar")
+	expected := "GOuD+uRChbA2FXl1XF/7ksklYAsKyDEOj+w0tc7xsb76cUnOl7pWuwP696+uDTyphhgH2HH628qUNciJ0kVG4Q=="
+	if actual != expected {
+		t.Errorf("got: %s\nwant: %s", actual, expected)
+	}
+}
 
 func TestCreateUser(t *testing.T) {
-	val := CreateUser()
-	if val != 3 {
-		t.Error("err")
+	before_each()
+	u := &User{UserID: "test", Email: "test@test.com", Name: "John"}
+	_, err := CreateUser(u, "pass")
+	if err != nil {
+		t.Error(err)
+	}
+
+	user2, err := FindUserOne(&User{UserID: "test"})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if user2.Name != "John" {
+		t.Errorf("name invalid")
+	}
+}
+
+func TestAuthorize(t *testing.T) {
+	before_each()
+	user, pass := specRandomUser()
+	_, err := CreateUser(user, pass)
+	if err != nil {
+		t.Error(err)
+	}
+
+	ok, err := user.Authorize(pass)
+	if err != nil {
+		t.Error(err)
+	}
+	if !ok {
+		t.Error("cannot authorize")
+	}
+}
+
+func TestReassignToken(t *testing.T) {
+	before_each()
+	user, pass := specRandomUser()
+	_, err := CreateUser(user, pass)
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = user.getAuthInfo()
+	if err != nil {
+		t.Error(err)
+	}
+	newtkn := user.ReassignToken()
+	newauth, err := user.getAuthInfo()
+	if newauth.Token != newtkn {
+		t.Errorf("got: %s\nwant: %s", newauth.Token, newtkn)
 	}
 }
