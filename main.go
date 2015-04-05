@@ -7,22 +7,22 @@ import (
 	"github.com/zenazn/goji"
 	"github.com/zenazn/goji/web"
 
-	"github.com/realistschuckle/gohaml"
-
 	"github.com/tattsun/coopy/config"
 	"github.com/tattsun/coopy/models"
+	"github.com/tattsun/coopy/views"
 )
 
 var conf = config.GetConfig()
 var model = models.NewModel(conf.MysqlHost, conf.MysqlUser, conf.MysqlPassword, conf.MysqlDatabase)
 
 func test(c web.C, w http.ResponseWriter, r *http.Request) {
-	scope := make(map[string]interface{})
-	scope["lang"] = "HAML"
-	content := "I love <\n=lang<\n"
-	engine, _ := gohaml.NewEngine(content)
-	output := engine.Render(scope)
-	fmt.Fprint(w, output)
+	engine := views.NewEngine("static/test.haml")
+	engine.Add("name", "john")
+	engine.Render(w)
+}
+
+func test2(c web.C, w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "<h1>Hello, world</h1>")
 }
 
 func main() {
@@ -31,5 +31,6 @@ func main() {
 		panic(err)
 	}
 	goji.Get("/", test)
+	goji.Get("/test", test2)
 	goji.Serve()
 }
