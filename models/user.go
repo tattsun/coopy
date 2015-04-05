@@ -17,7 +17,8 @@ func hashPassword(password string, salt string) string {
 func NewAuthUserInfo(userid string, password string) *UserAuthInfo {
 	salt := helpers.RandomStr(20)
 	hashed := hashPassword(password, salt)
-	return &UserAuthInfo{UserID: userid, HashedPassword: hashed, Salt: salt}
+	token := helpers.RandomStr(30)
+	return &UserAuthInfo{UserID: userid, HashedPassword: hashed, Salt: salt, Token: token}
 }
 
 func CreateUser(user *User, password string) (*UserAuthInfo, error) {
@@ -67,6 +68,15 @@ func (self *User) Authorize(password string) (bool, error) {
 		return true, nil
 	}
 	return false, nil
+}
+
+func (self *User) AuthorizeToken(token string) (bool, error) {
+	authinfo, err := self.getAuthInfo()
+	if err != nil {
+		return false, err
+	}
+
+	return authinfo.Token == token, nil
 }
 
 func (self *User) ReassignToken() string {

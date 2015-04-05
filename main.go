@@ -7,6 +7,8 @@ import (
 	"github.com/zenazn/goji"
 	"github.com/zenazn/goji/web"
 
+	"github.com/realistschuckle/gohaml"
+
 	"github.com/tattsun/coopy/config"
 	"github.com/tattsun/coopy/models"
 )
@@ -14,18 +16,20 @@ import (
 var conf = config.GetConfig()
 var model = models.NewModel(conf.MysqlHost, conf.MysqlUser, conf.MysqlPassword, conf.MysqlDatabase)
 
-func hello(c web.C, w http.ResponseWriter, r *http.Request) {
-	model.Migrate()
-	fmt.Fprintf(w, "Hello, %s, %s day", c.URLParams["name"], conf.MysqlHost)
-}
-
 func test(c web.C, w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "%d", 1)
+	scope := make(map[string]interface{})
+	scope["lang"] = "HAML"
+	content := "I love <\n=lang<\n"
+	engine, _ := gohaml.NewEngine(content)
+	output := engine.Render(scope)
+	fmt.Fprint(w, output)
 }
 
 func main() {
-	model.Open()
-	goji.Get("/hello/:name", hello)
+	err := model.Open()
+	if err != nil {
+		panic(err)
+	}
 	goji.Get("/", test)
 	goji.Serve()
 }
