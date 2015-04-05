@@ -14,8 +14,12 @@ func TestHashPassword(t *testing.T) {
 
 func TestCreateUser(t *testing.T) {
 	before_each()
-	u := &User{UserID: "test", Email: "test@test.com", Name: "John"}
-	_, err := CreateUser(u, "pass")
+
+	_, _, err := CreateUser("test", "test@test.com", "John", "pass")
+	if err != nil {
+		t.Error(err)
+	}
+	_, _, err = CreateUser("test2", "test2@test2.com", "John2", "pass2")
 	if err != nil {
 		t.Error(err)
 	}
@@ -32,8 +36,7 @@ func TestCreateUser(t *testing.T) {
 
 func TestAuthorize(t *testing.T) {
 	before_each()
-	user, pass := specRandomUser()
-	_, err := CreateUser(user, pass)
+	user, pass, err := specCreateUser()
 	if err != nil {
 		t.Error(err)
 	}
@@ -49,8 +52,7 @@ func TestAuthorize(t *testing.T) {
 
 func TestReassignToken(t *testing.T) {
 	before_each()
-	user, pass := specRandomUser()
-	_, err := CreateUser(user, pass)
+	user, _, err := specCreateUser()
 	if err != nil {
 		t.Error(err)
 	}

@@ -11,12 +11,13 @@ func before_each() {
 	m.Migrate()
 }
 
-func specRandomUser() (*User, string) {
+func specCreateUser() (*User, string, error) {
 	userid := helpers.RandomStr(20)
 	email := helpers.RandomStr(20)
 	name := helpers.RandomStr(20)
 	password := helpers.RandomStr(20)
-	return &User{UserID: userid, Email: email, Name: name}, password
+	u, _, err := CreateUser(userid, email, name, password)
+	return u, password, err
 }
 
 /*

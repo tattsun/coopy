@@ -21,21 +21,23 @@ func NewAuthUserInfo(userid string, password string) *UserAuthInfo {
 	return &UserAuthInfo{UserID: userid, HashedPassword: hashed, Salt: salt, Token: token}
 }
 
-func CreateUser(user *User, password string) (*UserAuthInfo, error) {
+func CreateUser(userid string, email string, name string, password string) (*User, *UserAuthInfo, error) {
+	user := &User{UserID: userid, Email: email, Name: name}
 	if IsExists(User{UserID: user.UserID}) {
-		return nil, fmt.Errorf("UserID %s duplicates.", user.UserID)
+		return nil, nil, fmt.Errorf("UserID %s duplicates.", user.UserID)
 	}
 	db.Create(user)
 
 	auth := NewAuthUserInfo(user.UserID, password)
 	db.Create(auth)
 
-	return auth, nil
+	return user, auth, nil
 }
 
 func IsExists(user User) bool {
 	cnt := 0
 	db.Model(&user).Where(user).Count(&cnt)
+	fmt.Printf("%d", cnt)
 	return cnt > 0
 }
 

@@ -41,6 +41,42 @@ func static_gitkeep() (*asset, error) {
 	return a, err
 }
 
+// static_assets_test_js reads file data from disk. It returns an error on failure.
+func static_assets_test_js() (*asset, error) {
+	path := "/Users/tattsun/work/src/github.com/tattsun/coopy/static/assets/test.js"
+	name := "static/assets/test.js"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// static_newuser_haml reads file data from disk. It returns an error on failure.
+func static_newuser_haml() (*asset, error) {
+	path := "/Users/tattsun/work/src/github.com/tattsun/coopy/static/newuser.haml"
+	name := "static/newuser.haml"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // static_test_haml reads file data from disk. It returns an error on failure.
 func static_test_haml() (*asset, error) {
 	path := "/Users/tattsun/work/src/github.com/tattsun/coopy/static/test.haml"
@@ -112,6 +148,8 @@ func AssetNames() []string {
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
 	"static/.gitkeep": static_gitkeep,
+	"static/assets/test.js": static_assets_test_js,
+	"static/newuser.haml": static_newuser_haml,
 	"static/test.haml": static_test_haml,
 }
 
@@ -157,6 +195,12 @@ type _bintree_t struct {
 var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 	"static": &_bintree_t{nil, map[string]*_bintree_t{
 		".gitkeep": &_bintree_t{static_gitkeep, map[string]*_bintree_t{
+		}},
+		"assets": &_bintree_t{nil, map[string]*_bintree_t{
+			"test.js": &_bintree_t{static_assets_test_js, map[string]*_bintree_t{
+			}},
+		}},
+		"newuser.haml": &_bintree_t{static_newuser_haml, map[string]*_bintree_t{
 		}},
 		"test.haml": &_bintree_t{static_test_haml, map[string]*_bintree_t{
 		}},
