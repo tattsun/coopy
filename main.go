@@ -17,7 +17,8 @@ var conf = config.GetConfig()
 var model = models.NewModel(conf.MysqlHost, conf.MysqlUser, conf.MysqlPassword, conf.MysqlDatabase)
 
 func home(c web.C, w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "OK")
+	views.WriteStatic("static/login.haml", w)
+
 }
 
 func resetdb(c web.C, w http.ResponseWriter, r *http.Request) {
