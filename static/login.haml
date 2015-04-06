@@ -1,7 +1,10 @@
 %html
   %haed
+    %script {:type => "text/javascript",
+        :src  => "assets/js/login_view.js"}
     %title Login
   %body
+    %header
     %form{:method => "POST", :action => "/login"}
       %p
         UserID:
