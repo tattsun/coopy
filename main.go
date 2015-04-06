@@ -90,6 +90,7 @@ func main() {
 	initSession("test")
 	// views
 	goji.Get("/", loginForm)
+	goji.Get("/test", home)
 	goji.Post("/login", loginHandler)
 	goji.Get("/resetdb", resetdb)
 	goji.Get("/users/new", newUser)
