@@ -6,6 +6,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type User struct {
@@ -34,7 +35,7 @@ type Article struct {
 
 type Revision struct {
 	Id           int
-	ArticleID    string    `sql:"not null"`
+	ArticleID    int       `sql:"not null"`
 	UserID       string    `sql:"not null"`
 	CreatedAt    time.Time `sql:"DEFAULT:current_timestamp"`
 	Title        string    `sql:"not null"`
@@ -43,8 +44,9 @@ type Revision struct {
 }
 
 type Tag struct {
-	Id      int
-	TagName string
+	Id        int
+	ArticleID int
+	TagName   string
 }
 
 type Model struct {
@@ -52,12 +54,13 @@ type Model struct {
 	password string
 	host     string
 	database string
+	debug    bool
 }
 
 var db *gorm.DB = nil
 
 func NewModel(host string, user string, password string, database string) *Model {
-	return &Model{user: user, password: password, host: host, database: database}
+	return &Model{user: user, password: password, host: host, database: database, debug: false}
 }
 
 func (m *Model) DropAll() {
@@ -84,13 +87,21 @@ func (m *Model) Open() error {
 		}
 	}
 
+	if m.debug {
+		dbn, err := gorm.Open("sqlite3", "/tmp/gorm.db")
+		if err != nil {
+			panic(err)
+		}
+		db = &dbn
+		return nil
+	}
+
 	conInfo := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local", m.user, m.password, m.host, m.database)
 	dbn, err := gorm.Open("mysql", conInfo)
 	if err != nil {
 		return err
 	}
 	db = &dbn
-	db.LogMode(true)
 	return nil
 }
 

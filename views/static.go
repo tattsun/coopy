@@ -41,6 +41,60 @@ func static_gitkeep() (*asset, error) {
 	return a, err
 }
 
+// static_assets_css_gitkeep reads file data from disk. It returns an error on failure.
+func static_assets_css_gitkeep() (*asset, error) {
+	path := "/Users/tattsun/work/src/github.com/tattsun/coopy/static/assets/css/.gitkeep"
+	name := "static/assets/css/.gitkeep"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// static_assets_img_gitkeep reads file data from disk. It returns an error on failure.
+func static_assets_img_gitkeep() (*asset, error) {
+	path := "/Users/tattsun/work/src/github.com/tattsun/coopy/static/assets/img/.gitkeep"
+	name := "static/assets/img/.gitkeep"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// static_assets_js_gitkeep reads file data from disk. It returns an error on failure.
+func static_assets_js_gitkeep() (*asset, error) {
+	path := "/Users/tattsun/work/src/github.com/tattsun/coopy/static/assets/js/.gitkeep"
+	name := "static/assets/js/.gitkeep"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // static_assets_js_login_view_js reads file data from disk. It returns an error on failure.
 func static_assets_js_login_view_js() (*asset, error) {
 	path := "/Users/tattsun/work/src/github.com/tattsun/coopy/static/assets/js/login_view.js"
@@ -59,10 +113,10 @@ func static_assets_js_login_view_js() (*asset, error) {
 	return a, err
 }
 
-// static_assets_test_js reads file data from disk. It returns an error on failure.
-func static_assets_test_js() (*asset, error) {
-	path := "/Users/tattsun/work/src/github.com/tattsun/coopy/static/assets/test.js"
-	name := "static/assets/test.js"
+// static_html_gitkeep reads file data from disk. It returns an error on failure.
+func static_html_gitkeep() (*asset, error) {
+	path := "/Users/tattsun/work/src/github.com/tattsun/coopy/static/html/.gitkeep"
+	name := "static/html/.gitkeep"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -184,8 +238,11 @@ func AssetNames() []string {
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
 	"static/.gitkeep": static_gitkeep,
+	"static/assets/css/.gitkeep": static_assets_css_gitkeep,
+	"static/assets/img/.gitkeep": static_assets_img_gitkeep,
+	"static/assets/js/.gitkeep": static_assets_js_gitkeep,
 	"static/assets/js/login_view.js": static_assets_js_login_view_js,
-	"static/assets/test.js": static_assets_test_js,
+	"static/html/.gitkeep": static_html_gitkeep,
 	"static/login.haml": static_login_haml,
 	"static/newuser.haml": static_newuser_haml,
 	"static/test.haml": static_test_haml,
@@ -235,11 +292,23 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 		".gitkeep": &_bintree_t{static_gitkeep, map[string]*_bintree_t{
 		}},
 		"assets": &_bintree_t{nil, map[string]*_bintree_t{
+			"css": &_bintree_t{nil, map[string]*_bintree_t{
+				".gitkeep": &_bintree_t{static_assets_css_gitkeep, map[string]*_bintree_t{
+				}},
+			}},
+			"img": &_bintree_t{nil, map[string]*_bintree_t{
+				".gitkeep": &_bintree_t{static_assets_img_gitkeep, map[string]*_bintree_t{
+				}},
+			}},
 			"js": &_bintree_t{nil, map[string]*_bintree_t{
+				".gitkeep": &_bintree_t{static_assets_js_gitkeep, map[string]*_bintree_t{
+				}},
 				"login_view.js": &_bintree_t{static_assets_js_login_view_js, map[string]*_bintree_t{
 				}},
 			}},
-			"test.js": &_bintree_t{static_assets_test_js, map[string]*_bintree_t{
+		}},
+		"html": &_bintree_t{nil, map[string]*_bintree_t{
+			".gitkeep": &_bintree_t{static_html_gitkeep, map[string]*_bintree_t{
 			}},
 		}},
 		"login.haml": &_bintree_t{static_login_haml, map[string]*_bintree_t{

@@ -6,6 +6,7 @@ import (
 
 func before_each() {
 	m := NewModel("localhost:3306", "coopyuser", "hogehoge", "coopytest")
+	m.debug = true
 	m.Open()
 	m.DropAll()
 	m.Migrate()
