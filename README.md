@@ -1,5 +1,6 @@
 # coopy
 [![wercker status](https://app.wercker.com/status/8440b7b9ecbbfc6575dcfbefc593641a/s "wercker status")](https://app.wercker.com/project/bykey/8440b7b9ecbbfc6575dcfbefc593641a)
+[![Coverage Status](https://coveralls.io/repos/tattsun/coopy/badge.svg?branch=master)](https://coveralls.io/r/tattsun/coopy?branch=master)
 
 Under construction
 
