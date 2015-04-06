@@ -26,5 +26,5 @@ build:
     - script:
         name: go test
         code: |
-          go test -covermode=count -coverprofile=profile.cov
-          goveralls -coverprofile=profile.cov -service='wercker.com' $COVERALLS_TOKEN
+          sh coverage.sh
+          goveralls -coverprofile=.profile.cov -service='wercker.com' $COVERALLS_TOKEN

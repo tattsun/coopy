@@ -30,3 +30,5 @@ _testmain.go
 
 tmp/
 flycheck_*
+
+.profile.cov
