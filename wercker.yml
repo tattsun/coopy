@@ -27,4 +27,4 @@ build:
         name: go test
         code: |
           sh coverage.sh
-          goveralls -coverprofile=.profile.cov -service='wercker.com' -repotoken $COVERALLS_TOKEN
+          goveralls -coverprofile=.profile.cov -service='wercker.com' -repotoken mLF1lwsSA2OGFQSQoHy2A4X2vZW8c2Ph7
