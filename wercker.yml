@@ -1,0 +1,4 @@
+box: wercker/default
+steps:
+   - tcnksm/goveralls:
+     token: $COVERALLS_TOKEN
